@@ -4,12 +4,13 @@
 #include <time.h>
 #include <QIcon>
 #include <QLCDNumber>
+#include <QMessageBox>
 
 
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),rr(0),cc(0),score(0),step(0),
+    QMainWindow(parent),rr(0),cc(0),score(0),step(4),
     ui(new Ui::MainWindow)
 {
 
@@ -22,8 +23,6 @@ MainWindow::MainWindow(QWidget *parent) :
             connect(arr[i][j],SIGNAL(push(int,int)),this,SLOT(button_click(int,int))); //this->mainwindow
         }
     }
-    start();
-
 }
 
 MainWindow::~MainWindow()
@@ -33,6 +32,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::button_click(int r, int c) //判斷按鈕交換
 {
+
     if(!flag) //第一次點下去 (if flag is false)
     {
          flag=true;
@@ -41,6 +41,8 @@ void MainWindow::button_click(int r, int c) //判斷按鈕交換
      }
     else //第二次點了
     {
+        ui->lcdNumber->display(score);
+        ui->lcdNumber_2->display(step);
         if((rr==r-1 && cc==c) || (rr==r+1 && cc==c)) //rr要和r交換
         {
             int temp = arr[r][c]->number;
@@ -73,20 +75,24 @@ void MainWindow::button_click(int r, int c) //判斷按鈕交換
 
         rr2=r;//第二下的
         cc2=c;
+
         star();
         clear_hol();
         clear_ver();
+        boom();
+        check_L();
         check_five();
-        //check_L();
         check_four();
         check_three();
+
         go_down();
         coo();
-
+        end_game();
+        ui->lcdNumber->display(score);
+        ui->lcdNumber_2->display(step);
         flag=false;
     }
 }
-
 
 
 void MainWindow::start()
@@ -117,7 +123,9 @@ void MainWindow::start()
         }
     }
     flag=false; //還沒按兩次不用交換
-
+    score=0;
+    ui->lcdNumber->display(score);
+    ui->lcdNumber_2->display(step);
 }
 
 void MainWindow::picture(int r,int c)
@@ -640,7 +648,6 @@ void MainWindow::check_three_no_score()
     }
 }
 
-
 void MainWindow::go_down()
 {
     int count=0;
@@ -705,7 +712,7 @@ void MainWindow::star()
                     {
                         if(arr[i][j]->number==1)
                         {
-                            score=score+5;
+                            score=score+1;
                         arr[i][j]->number=0; picture(i,j);
 
                         }
@@ -722,7 +729,7 @@ void MainWindow::star()
                     {
                           if(arr[i][j]->number==2)
                          {
-                            score=score+5;
+                            score=score+1;
                             arr[i][j]->number=0;picture(i,j);
 
                          }
@@ -739,7 +746,7 @@ void MainWindow::star()
                         {
                            if(arr[i][j]->number==3)
                             {
-                                score=score+5;
+                                score=score+1;
                                 arr[i][j]->number=0;picture(i,j);
 
                             }
@@ -756,7 +763,7 @@ void MainWindow::star()
                         {
                             if(arr[i][j]->number==4)
                             {
-                                score=score+5;
+                                score=score+1;
                                 arr[i][j]->number=0; picture(i,j);
 
                             }
@@ -779,7 +786,7 @@ void MainWindow::star()
                    {
                        if(arr[i][j]->number==1)
                        {
-                           score=score+5;
+                           score=score+1;
                            arr[i][j]->number=0; picture(i,j);
 
                        }
@@ -796,7 +803,7 @@ void MainWindow::star()
                    {
                        if(arr[i][j]->number==2)
                        {
-                           score=score+5;
+                           score=score+1;
                            arr[i][j]->number=0;picture(i,j);
 
                        }
@@ -813,7 +820,7 @@ void MainWindow::star()
                    {
                        if(arr[i][j]->number==3)
                        {
-                           score=score+5;
+                           score=score+1;
                            arr[i][j]->number=0;picture(i,j);
 
                        }
@@ -830,7 +837,7 @@ void MainWindow::star()
                    {
                        if(arr[i][j]->number==4)
                        {
-                           score=score+5;
+                           score=score+1;
                            arr[i][j]->number=0; picture(i,j);
 
                        }
@@ -871,6 +878,7 @@ void MainWindow::clear_hol()
                     for(int h=0;h<10;h++)
                     {
                         arr[i][h]->number=0; picture(i,h);
+                        score=score+5;
                     }
                 }
                 }
@@ -893,6 +901,7 @@ void MainWindow::clear_hol()
                         for(int h=0;h<10;h++)
                         {
                             arr[i][h]->number=0; picture(i,h);
+                            score=score+5;
                         }
                      }
                 }
@@ -902,10 +911,11 @@ void MainWindow::clear_hol()
                     if((arr[i][j]->number%20==arr[i+1][j]->number%20) && (arr[i][j]->number%20==arr[i+2][j]->number%20))
                     {
                         arr[i][j]->number=0; picture(i,j); cout<<"a1";
-                        arr[i+2][j]->number=0; picture(i,j);
+                        arr[i+2][j]->number=0; picture(i+2,j);
                        for(int h=0;h<10;h++)
                        {
-                           arr[i+1][h]->number=0; picture(i,h);
+                           arr[i+1][h]->number=0; picture(i+1,h);
+                           score=score+5;
 
                        }
                     }
@@ -915,11 +925,12 @@ void MainWindow::clear_hol()
                 {
                     if((arr[i][j]->number%20==arr[i+1][j]->number%20))
                     {
-                        arr[i+1][j]->number=0; picture(i,j);cout<<"a2";
+                        arr[i+1][j]->number=0; picture(i+1,j);cout<<"a2";
                         arr[i][j]->number=0; picture(i,j);
                        for(int h=0;h<10;h++)
                        {
-                           arr[i+2][h]->number=0; picture(i,h);
+                           arr[i+2][h]->number=0; picture(i+2,h);
+                           score=score+5;
                        }
                     }
                 }
@@ -957,164 +968,103 @@ bool MainWindow::is_three()
 
 void MainWindow::boom()
 {
-    if(arr[rr][cc]->number>30 && arr[rr][cc]->number<40) //按了炸彈
+    for(int i=0;i<8;i++)
     {
-       if(arr[rr][cc]->number%10==arr[rr][cc+1]->number%10 &&  arr[rr][cc]->number%10==arr[rr][cc+2]->number%10)
-       {
-           arr[rr][cc]->number=0;
-           arr[rr][cc+1]->number=0;
-           arr[rr][cc-1]->number=0;
-           arr[rr+1][cc+1]->number=0;
-           arr[rr+1][cc-1]->number=0;
-           arr[rr-1][cc+1]->number=0;
-           arr[rr-1][cc-1]->number=0;
-           arr[rr+1][cc]->number=0;
-           arr[rr-1][cc]->number=0;
-       }
-       else if(arr[rr][cc]->number%10==arr[rr][cc+1]->number%10 &&  arr[rr][cc]->number%10==arr[rr][cc-1]->number%10)
-       {
-           arr[rr][cc]->number=0;
-           arr[rr][cc+1]->number=0;
-           arr[rr][cc-1]->number=0;
-           arr[rr+1][cc+1]->number=0;
-           arr[rr+1][cc-1]->number=0;
-           arr[rr-1][cc+1]->number=0;
-           arr[rr-1][cc-1]->number=0;
-           arr[rr+1][cc]->number=0;
-           arr[rr-1][cc]->number=0;
-       }
-       else if(arr[rr][cc]->number%10==arr[rr][cc-1]->number%10 &&  arr[rr][cc]->number%10==arr[rr][cc-2]->number%10)
-       {
-           arr[rr][cc]->number=0;
-           arr[rr][cc+1]->number=0;
-           arr[rr][cc-1]->number=0;
-           arr[rr+1][cc+1]->number=0;
-           arr[rr+1][cc-1]->number=0;
-           arr[rr-1][cc+1]->number=0;
-           arr[rr-1][cc-1]->number=0;
-           arr[rr+1][cc]->number=0;
-           arr[rr-1][cc]->number=0;
-       }
+        for(int j=0;j<8;j++)
+        {
+            if((arr[i][j]->number%30==arr[i][j+1]->number%30) && (arr[i][j]->number%30==arr[i][j+2]->number%30))
+            {
+                if(arr[i][j]->number>30)
+                {   score=score+45;
+                    arr[i][j]->number=0;
+                    arr[i][j+1]->number=0;
+                    arr[i][j-1]->number=0;
+                    arr[i+1][j]->number=0;
+                    arr[i+1][j+1]->number=0;
+                    arr[i+1][j-1]->number=0;
+                    arr[i-1][j]->number=0;
+                    arr[i-1][j+1]->number=0;
+                    arr[i-1][j-1]->number=0;
+                }
+                if(arr[i][j+1]->number>30)
+                {
+                    score=score+45;
+                    arr[i][j+1]->number=0;
+                    arr[i][j+2]->number=0;
+                    arr[i][j]->number=0;
+                    arr[i+1][j+1]->number=0;
+                    arr[i+1][j+2]->number=0;
+                    arr[i+1][j]->number=0;
+                    arr[i-1][j+1]->number=0;
+                    arr[i-1][j+2]->number=0;
+                    arr[i-1][j]->number=0;
+                }
+                if(arr[i][j+2]->number>30)
+                {
+                    score=score+45;
+                    arr[i][j+2]->number=0;
+                    arr[i][j+3]->number=0;
+                    arr[i][j+1]->number=0;
+                    arr[i+1][j+2]->number=0;
+                    arr[i+1][j+3]->number=0;
+                    arr[i+1][j+1]->number=0;
+                    arr[i-1][j+2]->number=0;
+                    arr[i-1][j+3]->number=0;
+                    arr[i-1][j+1]->number=0;
+                }
+
+            }
+        }
     }
 
-    if(arr[rr2][cc2]->number>30 && arr[rr2][cc2]->number<40) //按了炸彈
+    for(int j=0;j<8;j++)
     {
-       if(arr[rr2][cc2]->number%10==arr[rr2][cc2+1]->number%10 &&  arr[rr2][cc2]->number%10==arr[rr2][cc2+2]->number%10)
-       {
-           arr[rr2][cc2]->number=0;
-           arr[rr2][cc2+1]->number=0;
-           arr[rr2][cc2-1]->number=0;
-           arr[rr2+1][cc2+1]->number=0;
-           arr[rr2+1][cc2-1]->number=0;
-           arr[rr2-1][cc2+1]->number=0;
-           arr[rr2-1][cc2-1]->number=0;
-           arr[rr2+1][cc2]->number=0;
-           arr[rr2-1][cc2]->number=0;
-       }
-       else if(arr[rr2][cc2]->number%10==arr[rr2][cc2+1]->number%10 &&  arr[rr2][cc2]->number%10==arr[rr2][cc2-1]->number%10)
-       {
-           arr[rr2][cc2]->number=0;
-           arr[rr2][cc2+1]->number=0;
-           arr[rr2][cc2-1]->number=0;
-           arr[rr2+1][cc2+1]->number=0;
-           arr[rr2+1][cc2-1]->number=0;
-           arr[rr2-1][cc2+1]->number=0;
-           arr[rr2-1][cc2-1]->number=0;
-           arr[rr2+1][cc2]->number=0;
-           arr[rr2-1][cc2]->number=0;
-       }
-       else if(arr[rr2][cc2]->number%10==arr[rr2][cc2-1]->number%10 &&  arr[rr2][cc2]->number%10==arr[rr2][cc2-2]->number%10)
-       {
-           arr[rr2][cc2]->number=0;
-           arr[rr2][cc2+1]->number=0;
-           arr[rr2][cc2-1]->number=0;
-           arr[rr2+1][cc2+1]->number=0;
-           arr[rr2+1][cc2-1]->number=0;
-           arr[rr2-1][cc2+1]->number=0;
-           arr[rr2-1][cc2-1]->number=0;
-           arr[rr2+1][cc2]->number=0;
-           arr[rr2-1][cc2]->number=0;
-       }
-    }
+        for(int i=0;i<8;i++)
+        {
+            if((arr[i][j]->number%30==arr[i+1][j]->number%30) && (arr[i][j]->number%30==arr[i+2][j]->number%30))
+            {
+                if(arr[i][j]->number>30)
+                {
+                    score=score+45;
+                    arr[i][j]->number=0;
+                    arr[i+1][j]->number=0;
+                    arr[i-1][j]->number=0;
+                    arr[i][j+1]->number=0;
+                    arr[i+1][j+1]->number=0;
+                    arr[i-1][j+1]->number=0;
+                    arr[i][j-1]->number=0;
+                    arr[i+1][j-1]->number=0;
+                    arr[i-1][j-1]->number=0;
+                }
+                if(arr[i][j+1]->number>30)
+                {
+                    score=score+45;
+                    arr[i+1][j]->number=0;
+                    arr[i+2][j]->number=0;
+                    arr[i][j]->number=0;
+                    arr[i+1][j+1]->number=0;
+                    arr[i+2][j+1]->number=0;
+                    arr[i][j+1]->number=0;
+                    arr[i+1][j-1]->number=0;
+                    arr[i+2][j-1]->number=0;
+                    arr[i][j-1]->number=0;
+                }
+                if(arr[i][j+2]->number>30)
+                {
+                    score=score+45;
+                    arr[i+1][j]->number=0;
+                    arr[i+2][j]->number=0;
+                    arr[i+3][j]->number=0;
+                    arr[i+1][j+1]->number=0;
+                    arr[i+2][j+1]->number=0;
+                    arr[i+3][j+1]->number=0;
+                    arr[i+1][j-1]->number=0;
+                    arr[i+2][j-1]->number=0;
+                    arr[i+3][j-1]->number=0;
+                }
 
-    if(arr[rr][cc]->number>30 && arr[rr][cc]->number<40) //按了炸彈
-    {
-       if(arr[rr][cc]->number%10==arr[rr+1][cc]->number%10 &&  arr[rr][cc]->number%10==arr[rr+2][cc]->number%10)
-       {
-           arr[rr][cc]->number=0;
-           arr[rr][cc+1]->number=0;
-           arr[rr][cc-1]->number=0;
-           arr[rr+1][cc+1]->number=0;
-           arr[rr+1][cc-1]->number=0;
-           arr[rr-1][cc+1]->number=0;
-           arr[rr-1][cc-1]->number=0;
-           arr[rr+1][cc]->number=0;
-           arr[rr-1][cc]->number=0;
-       }
-       else if(arr[rr][cc]->number%10==arr[rr+1][cc]->number%10 &&  arr[rr][cc]->number%10==arr[rr-1][cc]->number%10)
-       {
-           arr[rr][cc]->number=0;
-           arr[rr][cc+1]->number=0;
-           arr[rr][cc-1]->number=0;
-           arr[rr+1][cc+1]->number=0;
-           arr[rr+1][cc-1]->number=0;
-           arr[rr-1][cc+1]->number=0;
-           arr[rr-1][cc-1]->number=0;
-           arr[rr+1][cc]->number=0;
-           arr[rr-1][cc]->number=0;
-       }
-       else if(arr[rr][cc]->number%10==arr[rr-1][cc]->number%10 &&  arr[rr][cc]->number%10==arr[rr-2][cc]->number%10)
-       {
-           arr[rr][cc]->number=0;
-           arr[rr][cc+1]->number=0;
-           arr[rr][cc-1]->number=0;
-           arr[rr+1][cc+1]->number=0;
-           arr[rr+1][cc-1]->number=0;
-           arr[rr-1][cc+1]->number=0;
-           arr[rr-1][cc-1]->number=0;
-           arr[rr+1][cc]->number=0;
-           arr[rr-1][cc]->number=0;
-       }
-    }
-
-    if(arr[rr2][cc2]->number>30 && arr[rr2][cc2]->number<40) //按了炸彈
-    {
-       if(arr[rr2][cc2]->number%10==arr[rr2+1][cc2]->number%10 &&  arr[rr2][cc2]->number%10==arr[rr2+2][cc2]->number%10)
-       {
-           arr[rr2][cc2]->number=0;
-           arr[rr2][cc2+1]->number=0;
-           arr[rr2][cc2-1]->number=0;
-           arr[rr2+1][cc2+1]->number=0;
-           arr[rr2+1][cc2-1]->number=0;
-           arr[rr2-1][cc2+1]->number=0;
-           arr[rr2-1][cc2-1]->number=0;
-           arr[rr2+1][cc2]->number=0;
-           arr[rr2-1][cc2]->number=0;
-       }
-       else if(arr[rr2][cc2]->number%10==arr[rr2+2][cc2]->number%10 &&  arr[rr2][cc2]->number%10==arr[rr2-1][cc2]->number%10)
-       {
-           arr[rr2][cc2]->number=0;
-           arr[rr2][cc2+1]->number=0;
-           arr[rr2][cc2-1]->number=0;
-           arr[rr2+1][cc2+1]->number=0;
-           arr[rr2+1][cc2-1]->number=0;
-           arr[rr2-1][cc2+1]->number=0;
-           arr[rr2-1][cc2-1]->number=0;
-           arr[rr2+1][cc2]->number=0;
-           arr[rr2-1][cc2]->number=0;
-       }
-       else if(arr[rr2][cc2]->number%10==arr[rr2-1][cc2]->number%10 &&  arr[rr2][cc2]->number%10==arr[rr2-2][cc2]->number%10)
-       {
-           arr[rr2][cc2]->number=0;
-           arr[rr2][cc2+1]->number=0;
-           arr[rr2][cc2-1]->number=0;
-           arr[rr2+1][cc2+1]->number=0;
-           arr[rr2+1][cc2-1]->number=0;
-           arr[rr2-1][cc2+1]->number=0;
-           arr[rr2-1][cc2-1]->number=0;
-           arr[rr2+1][cc2]->number=0;
-           arr[rr2-1][cc2]->number=0;
-       }
+            }
+        }
     }
 }
 
@@ -1132,6 +1082,7 @@ void MainWindow::clear_ver()
                     for(int h=0;h<10;h++)
                     {
                         arr[h][j]->number=0; picture(h,j);
+                        score=score+5;
                     }
                 }
                 }
@@ -1139,48 +1090,51 @@ void MainWindow::clear_ver()
         }
     }
 
-    for(int i=0;i<8;i++) //十字的
+    for(int j=0;j<8;j++) //十字的
     {
-        for(int j=0;j<10;j++)
+        for(int i=0;i<10;i++)
         {
-            if(arr[i][j]->number%10==arr[i+1][j]->number%10 && arr[i][j]->number%10==arr[i+2][j]->number%10)
+            if(arr[i][j]->number%10==arr[i][j+1]->number%10 && arr[i][j]->number%10==arr[i][j+2]->number%10)
             {
-                if(arr[i][j]->number>20)
+                if(arr[i][j]->number>50)
                 {
-                     if((arr[i][j]->number%20==arr[i+1][j]->number%20) && (arr[i][j]->number%20==arr[i+2][j]->number%20))
+                     if((arr[i][j]->number%50==arr[i][j+1]->number%50) && (arr[i][j]->number%20==arr[i][j+2]->number%50))
                      {
-                         arr[i+1][j]->number=0; picture(i,j);cout<<"a3";
-                         arr[i+2][j]->number=0; picture(i,j);
+                         arr[i][j+1]->number=0; picture(i,j+1);
+                         arr[i][j+2]->number=0; picture(i,j+2);
                         for(int h=0;h<10;h++)
                         {
-                            arr[i][h]->number=0; picture(i,h);
+                            arr[h][j]->number=0; picture(h,j);
+                            score=score+5;
                         }
                      }
                 }
 
-                if( arr[i+1][j]->number>20)
+                if( arr[i][j+1]->number>50)
                 {
-                    if((arr[i][j]->number%20==arr[i+1][j]->number%20) && (arr[i][j]->number%20==arr[i+2][j]->number%20))
+                    if((arr[i][j]->number%50==arr[i][j+1]->number%50) && (arr[i][j]->number%20==arr[i][j+2]->number%50))
                     {
-                        arr[i][j]->number=0; picture(i,j); cout<<"a1";
-                        arr[i+2][j]->number=0; picture(i,j);
+                        arr[i][j]->number=0; picture(i,j);
+                        arr[i][j+2]->number=0; picture(i,j+2);
                        for(int h=0;h<10;h++)
                        {
-                           arr[i+1][h]->number=0; picture(i,h);
+                           arr[h][j+1]->number=0; picture(h,j+1);
+                           score=score+5;
 
                        }
                     }
                 }
 
-                if( arr[i+2][j]->number>20)
+                if( arr[i][j+2]->number>50)
                 {
-                    if((arr[i][j]->number%20==arr[i+1][j]->number%20) && (arr[i][j]->number%20==arr[i+2][j]->number%20))
+                    if((arr[i][j]->number%50==arr[i+1][j]->number%50) && (arr[i][j]->number%50==arr[i+2][j]->number%50))
                     {
-                        arr[i+1][j]->number=0; picture(i,j);cout<<"a2";
+                        arr[i][j+1]->number=0; picture(i,j+1);cout<<"a2";
                         arr[i][j]->number=0; picture(i,j);
                        for(int h=0;h<10;h++)
                        {
-                           arr[i+2][h]->number=0; picture(i,h);
+                           arr[h][j+2]->number=0; picture(h,j+2);
+                           score=score+5;
                        }
                     }
                 }
@@ -1189,13 +1143,17 @@ void MainWindow::clear_ver()
     }
 }
 
-void MainWindow::pic()
+void MainWindow::end_game()
 {
-    for(int i=0;i<10;i++)
+    if(step==0)
     {
-        for(int j=0;j<10;j++)
-        {
-            picture(i,j);
-        }
+        QMessageBox::information( this, "end game","the end", QMessageBox::Ok, 0 );
     }
 }
+
+
+void MainWindow::on_pushButton_clicked()
+{
+    start();
+}
+

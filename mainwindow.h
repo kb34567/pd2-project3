@@ -6,6 +6,8 @@
 #include <QObject>
 #include "square.h"
 #include <time.h>
+#include <QMessageBox>
+
 
 namespace Ui {
 class MainWindow;
@@ -33,7 +35,7 @@ public:
     void boom();
     void check_three_no_score();
     void coo();
-    void pic();
+    void end_game();
     int score;
     int step;
 
@@ -41,12 +43,14 @@ public:
 public slots:
     void button_click(int r,int c);
 
+private slots:
 
+
+    void on_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;
     square *arr[10][10];
-    int arr_copy[10][10];
     int rr;
     int cc;
     int rr2=0;
