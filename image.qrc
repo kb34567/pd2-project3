@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>1</file>
+        <file>2</file>
+        <file>3</file>
+        <file>4</file>
+        <file>51</file>
+        <file>21</file>
+        <file>22</file>
+        <file>53</file>
+        <file>23</file>
+        <file>54</file>
+        <file>24</file>
+        <file>52</file>
+        <file>40</file>
+        <file>31</file>
+        <file>32</file>
+        <file>33</file>
+        <file>34</file>
+    </qresource>
+</RCC>
